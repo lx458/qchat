@@ -20,6 +20,7 @@
         <div class="container mx-auto flex justify-between items-center">
             <h1 class="text-2xl font-bold">量子计算VQE算法互动展示</h1>
             <div class="space-x-4">
+                <!-- 直接用原生JS控制display，避免Tailwind class冲突 -->
                 <button onclick="showTab('intro')" class="hover:bg-indigo-700 px-3 py-1 rounded">算法介绍</button>
                 <button onclick="showTab('h2calc')" class="hover:bg-indigo-700 px-3 py-1 rounded">氢分子计算</button>
                 <button onclick="showTab('chat')" class="hover:bg-indigo-700 px-3 py-1 rounded">对话互动</button>
@@ -27,10 +28,10 @@
         </div>
     </nav>
 
-    <!-- 主要内容区（修复了DOM结构，去掉多余的闭合标签） -->
+    <!-- 主要内容区：用原生display控制显示/隐藏 -->
     <main class="container mx-auto flex-1 p-4 md:p-6 min-h-[600px]">
-        <!-- 1. 算法介绍Tab -->
-        <div id="intro" class="tab-content block">
+        <!-- 1. 算法介绍Tab：初始显示 -->
+        <div id="intro" class="tab-content" style="display: block;">
             <div class="bg-white rounded-xl shadow-md p-6 mb-6">
                 <h2 class="text-xl font-bold text-indigo-600 mb-4">VQE算法核心原理</h2>
                 <div class="grid md:grid-cols-2 gap-6">
@@ -83,8 +84,8 @@ pip install deepquantum[dev]</pre>
             </div>
         </div>
 
-        <!-- 2. 氢分子计算Tab -->
-        <div id="h2calc" class="tab-content hidden">
+        <!-- 2. 氢分子计算Tab：初始隐藏 -->
+        <div id="h2calc" class="tab-content" style="display: none;">
             <div class="bg-white rounded-xl shadow-md p-6 mb-6">
                 <h2 class="text-xl font-bold text-indigo-600 mb-4">氢分子（H₂）基态能量计算</h2>
                 <div class="grid md:grid-cols-2 gap-6">
@@ -118,8 +119,8 @@ pip install deepquantum[dev]</pre>
             </div>
         </div>
 
-        <!-- 3. 对话互动Tab -->
-        <div id="chat" class="tab-content hidden flex flex-col h-[600px]">
+        <!-- 3. 对话互动Tab：初始隐藏 -->
+        <div id="chat" class="tab-content" style="display: none; flex-direction: column; height: 600px;">
             <div class="bg-white rounded-xl shadow-md p-4 mb-4 flex-1 overflow-y-auto flex flex-col" id="chat-history">
                 <div class="ai-bubble">
                     你好！我是量子计算VQE算法助手～ 可以问我关于VQE原理、DeepQuantum安装、氢分子计算的问题，比如：
@@ -150,23 +151,22 @@ pip install deepquantum[dev]</pre>
     </footer>
 
 <script>
-    // 修复Tab切换逻辑，确保所有内容区域正确显示
+    // 改用原生JS控制display，彻底解决Tab切换空白问题
     function showTab(tabId) {
         // 隐藏所有Tab内容
         document.querySelectorAll('.tab-content').forEach(tab => {
-            tab.classList.add('hidden');
-            tab.classList.remove('block', 'flex');
+            tab.style.display = 'none';
         });
-        // 显示目标Tab内容
+        // 显示目标Tab内容（根据Tab类型设置display）
         const targetTab = document.getElementById(tabId);
         if (tabId === 'chat') {
-            targetTab.classList.add('flex');
+            targetTab.style.display = 'flex'; // 对话Tab是flex布局
         } else {
-            targetTab.classList.add('block');
+            targetTab.style.display = 'block'; // 其他Tab是block布局
         }
     }
 
-    // 初始化能量曲线（确保Chart.js正确加载）
+    // 初始化能量曲线
     window.addEventListener('DOMContentLoaded', () => {
         const ctx = document.getElementById('energyChart').getContext('2d');
         new Chart(ctx, {
@@ -199,11 +199,11 @@ pip install deepquantum[dev]</pre>
             }
         });
 
-        // 初始化Mermaid
+        // 初始化Mermaid流程图
         mermaid.initialize({startOnLoad: true});
     });
 
-    // 对话功能（保持原有逻辑）
+    // 对话功能逻辑
     const qaLibrary = {
         "什么是vqe算法？": "VQE（变分量子本征求解器）是量子-经典混合算法，核心是通过迭代优化参数化量子电路（Ansatz），求解分子哈密顿量的最小本征值（基态能量），适用于NISQ量子硬件，是量子化学的核心算法。",
         "如何安装deepquantum？": "安装步骤如下：<br>1. 创建Conda环境：conda create -n dqenv python=3.12 -y<br>2. 激活环境：conda activate dqenv<br>3. 安装PyTorch：pip install torch<br>4. 安装DeepQuantum：pip install deepquantum（基础版）或pip install deepquantum[dev]（开发者版）",
