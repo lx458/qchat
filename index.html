@@ -44,6 +44,7 @@
         </div>
     </main>
 
+    <!-- 页脚 -->
     <footer class="bg-indigo-600 text-white p-4 mt-8">
         <div class="container mx-auto text-center">
             <p>量子计算VQE算法课堂展示平台</p>
@@ -66,10 +67,10 @@
         sendMessage();
     }
 
-    // 发送消息核心函数 (已修复匹配逻辑)
+    // 发送消息核心函数
     function sendMessage() {
         const userInputField = document.getElementById('user-input');
-        const userInput = userInputField.value.trim();
+        const userInput = userInputField.value.trim().toLowerCase();
         if (!userInput) return;
 
         const chatHistory = document.getElementById('chat-history');
@@ -84,13 +85,9 @@
         userInputField.value = '';
         chatHistory.scrollTop = chatHistory.scrollHeight;
 
-        // 关键修复：统一处理用户输入和qaLibrary的问题（去掉标点+转小写）
-        const processText = (text) => text.replace(/[^\u4e00-\u9fa5a-z0-9]/g, '').toLowerCase();
-        const processedUserInput = processText(userInput);
-
-        // 3. 匹配答案（对qaLibrary的键也做同样处理）
+        // 3. 匹配答案
         const matchedAnswer = qaLibrary[Object.keys(qaLibrary).find(key => 
-            processText(key) === processedUserInput
+            key.toLowerCase() === userInput.replace(/[^\u4e00-\u9fa5a-z0-9]/g, '')
         )];
 
         // 4. 模拟AI思考并回复
