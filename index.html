@@ -3,58 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>量子计算VQE算法对话展示平台</title>
-    <!-- 引入现代字体 Inter -->
+    <title>量子计算VQE算法对话展示平台（通义千问版）</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- 引入 Font Awesome 图标库 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Mermaid 库已不再需要，已移除 -->
     <style>
-        /* 全局字体设置 */
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-
-        /* 气泡样式微调 */
+        body { font-family: 'Inter', sans-serif; }
         .user-bubble { background-color: #4338ca; color: white; border-radius: 1.25rem 1.25rem 0.25rem 1.25rem; padding: 0.75rem 1rem; margin: 0.5rem 0; max-width: 70%; align-self: flex-end; word-wrap: break-word; box-shadow: 0 4px 12px rgba(67, 56, 202, 0.2); }
         .ai-bubble { background-color: #f3f4f6; color: #1f2937; border-radius: 1.25rem 1.25rem 1.25rem 0.25rem; padding: 0.75rem 1rem; margin: 0.5rem 0; max-width: 70%; align-self: flex-start; word-wrap: break-word; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); }
-        
-        /* 滚动条美化 */
+        .loading-bubble { background-color: #f3f4f6; color: #1f2937; border-radius: 1.25rem 1.25rem 1.25rem 0.25rem; padding: 0.75rem 1rem; margin: 0.5rem 0; max-width: 20%; align-self: flex-start; display: flex; align-items: center; gap: 0.5rem; }
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #e5e7eb; border-radius: 3px; }
         ::-webkit-scrollbar-thumb { background-color: #9ca3af; border-radius: 3px; }
-
-        /* Tab 切换动画 */
-        .tab-content {
-            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
-            opacity: 0;
-            transform: translateY(10px);
-            display: none;
-        }
-        .tab-content.active-tab {
-            display: block;
-            opacity: 1;
-            transform: translateY(0);
-        }
-        /* 针对 chat tab 的特殊处理 */
-        #chat.active-tab {
-            display: flex;
-        }
+        .tab-content { transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out; opacity: 0; transform: translateY(10px); display: none; }
+        .tab-content.active-tab { display: block; opacity: 1; transform: translateY(0); }
+        #chat.active-tab { display: flex; }
+        .api-key-input { border: 1px solid #ddd; border-radius: 0.5rem; padding: 0.5rem; width: 100%; margin-top: 0.5rem; }
+        .api-hint { font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem; }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col text-gray-800">
     <!-- 导航栏 -->
     <nav class="bg-indigo-800 text-white p-4 shadow-lg">
         <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-bold tracking-tight">量子计算 VQE 算法</h1>
+            <h1 class="text-2xl font-bold tracking-tight">量子计算 VQE 算法（通义千问版）</h1>
             <div class="space-x-1 md:space-x-2">
                 <button onclick="showTab('intro')" class="hover:bg-indigo-700 px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2"><i class="fa-solid fa-book"></i>算法介绍</button>
                 <button onclick="showTab('h2calc')" class="hover:bg-indigo-700 px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2"><i class="fa-solid fa-flask"></i>氢分子计算</button>
-                <button onclick="showTab('chat')" class="hover:bg-indigo-700 px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2"><i class="fa-solid fa-comments"></i>对话互动</button>
+                <button onclick="showTab('chat')" class="hover:bg-indigo-700 px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2"><i class="fa-solid fa-comments"></i>AI对话</button>
             </div>
         </div>
     </nav>
@@ -65,7 +44,6 @@
         <div id="intro" class="tab-content active-tab">
             <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-8">
                 <h2 class="text-2xl font-bold text-indigo-700 mb-6 flex items-center gap-3"><i class="fa-solid fa-atom"></i>VQE 算法核心原理</h2>
-                <!-- 布局已从两列改为一列，并优化了内容 -->
                 <div class="grid md:grid-cols-1 gap-8">
                     <div>
                         <h3 class="text-xl font-semibold mb-3 text-gray-700">什么是 VQE？</h3>
@@ -85,7 +63,6 @@
                             <li>仅需浅层量子电路，适配 NISQ 硬件（噪声大、相干时间短）</li>
                         </ul>
                     </div>
-                    <!-- 流程图已被移除，替换为一个视觉强调区块 -->
                     <div class="bg-gradient-to-br from-indigo-500 to-purple-600 p-6 rounded-xl border border-gray-200 flex flex-col justify-center text-white">
                         <h3 class="text-xl font-semibold mb-4 text-center">核心思想</h3>
                         <p class="text-center text-lg font-medium leading-relaxed">
@@ -145,27 +122,35 @@ pip install deepquantum[dev]</pre>
             </div>
         </div>
 
-        <!-- 3. 对话互动Tab -->
+        <!-- 3. 通义千问AI对话Tab（核心修改区） -->
         <div id="chat" class="tab-content" style="flex-direction: column; height: 80vh; max-height: 800px;">
             <div class="bg-white rounded-2xl shadow-lg p-4 md:p-6 mb-6 flex-1 overflow-y-auto flex flex-col" id="chat-history">
                 <div class="ai-bubble">
-                    你好！我是量子计算 VQE 算法助手～ 可以问我关于 VQE 原理、DeepQuantum 安装、氢分子计算的问题，比如：
-                    <br>1. 什么是 VQE 算法？
-                    <br>2. 如何安装 DeepQuantum？
-                    <br>3. 氢分子的基态能量是多少？
+                    你好！我是量子计算 VQE 算法AI助手（基于通义千问）～ 请先输入你的通义千问 API 密钥，然后可以问我任何关于 VQE 算法、量子计算、DeepQuantum 框架、氢分子计算的问题，我会为你实时解答！
                 </div>
             </div>
             <div class="flex flex-col gap-4">
+                <!-- 通义千问API密钥输入区 -->
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <label class="font-medium text-gray-700 flex items-center gap-2"><i class="fa-solid fa-key"></i>通义千问 API 密钥</label>
+                    <input type="password" id="qwen-api-key" placeholder="sk-xxx..." class="api-key-input focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <p class="api-hint">
+                        密钥获取：<a href="https://dashscope.console.aliyun.com/" target="_blank" class="text-indigo-600 hover:underline">通义千问开放平台</a> | 
+                        免费额度：新用户赠送一定 tokens，足够测试使用
+                    </p>
+                </div>
+                <!-- 问题输入区 -->
                 <div class="flex space-x-3">
-                    <input type="text" id="user-input" placeholder="输入你的问题..." class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-700">
+                    <input type="text" id="user-input" placeholder="输入你的问题（例如：VQE算法如何处理噪声？）..." class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-700">
                     <button id="send-button" class="bg-indigo-700 text-white px-6 py-3 rounded-lg hover:bg-indigo-800 transition-colors flex items-center gap-2 font-semibold"><i class="fa-solid fa-paper-plane"></i>发送</button>
                 </div>
+                <!-- 快速提问 -->
                 <div class="flex flex-wrap gap-2">
                     <span class="text-sm text-gray-500 font-medium">快速提问:</span>
-                    <button class="quick-question-btn bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg text-sm text-gray-700 transition-colors" data-question="什么是VQE算法？">什么是VQE算法？</button>
-                    <button class="quick-question-btn bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg text-sm text-gray-700 transition-colors" data-question="如何安装DeepQuantum？">安装DeepQuantum</button>
-                    <button class="quick-question-btn bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg text-sm text-gray-700 transition-colors" data-question="氢分子的基态能量是多少？">氢分子能量？</button>
-                    <button class="quick-question-btn bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg text-sm text-gray-700 transition-colors" data-question="VQE为什么适用于量子化学？">VQE的优势？</button>
+                    <button class="quick-question-btn bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg text-sm text-gray-700 transition-colors" data-question="VQE算法如何处理量子噪声？">VQE如何处理量子噪声？</button>
+                    <button class="quick-question-btn bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg text-sm text-gray-700 transition-colors" data-question="DeepQuantum如何实现VQE？">DeepQuantum实现VQE？</button>
+                    <button class="quick-question-btn bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg text-sm text-gray-700 transition-colors" data-question="氢分子计算中Ansatz电路如何设计？">Ansatz电路设计？</button>
+                    <button class="quick-question-btn bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg text-sm text-gray-700 transition-colors" data-question="VQE与其他量子化学算法的区别？">VQE与其他算法区别？</button>
                 </div>
             </div>
         </div>
@@ -173,21 +158,17 @@ pip install deepquantum[dev]</pre>
 
     <footer class="bg-indigo-800 text-white p-6 mt-auto">
         <div class="container mx-auto text-center text-gray-300">
-            <p>量子计算 VQE 算法互动平台 &copy; 2024 | 基于 DeepQuantum 框架</p>
+            <p>量子计算 VQE 算法AI互动平台 &copy; 2024 | 基于 通义千问 API + DeepQuantum 框架</p>
         </div>
     </footer>
 
 <script>
-    // 全局DOM加载完成后执行初始化
     document.addEventListener('DOMContentLoaded', () => {
-        // Mermaid 初始化已移除
-        // 初始化图表
         initEnergyChart();
-        // 初始化事件监听器
         initEventListeners();
     });
 
-    // 初始化能量收敛曲线图
+    // 能量图表初始化（不变）
     function initEnergyChart() {
         const ctx = document.getElementById('energyChart').getContext('2d');
         new Chart(ctx, {
@@ -218,89 +199,119 @@ pip install deepquantum[dev]</pre>
                 responsive: true,
                 maintainAspectRatio: false,
                 scales: {
-                    y: { 
-                        title: { display: true, text: '能量（Hartree）', font: { size: 14 } }, 
-                        grid: { color: 'rgba(0, 0, 0, 0.05)' }
-                    },
-                    x: { 
-                        title: { display: true, text: '迭代次数', font: { size: 14 } },
-                        grid: { display: false }
-                    }
+                    y: { title: { display: true, text: '能量（Hartree）', font: { size: 14 } }, grid: { color: 'rgba(0, 0, 0, 0.05)' } },
+                    x: { title: { display: true, text: '迭代次数', font: { size: 14 } }, grid: { display: false } }
                 },
-                plugins: { 
-                    legend: { display: false },
-                    tooltip: {
-                        backgroundColor: '#1f2937',
-                        titleFont: { size: 14, weight: 'bold' },
-                        bodyFont: { size: 12 },
-                        padding: 12,
-                        cornerRadius: 8,
-                        displayColors: false
-                    }
-                }
+                plugins: { legend: { display: false }, tooltip: { backgroundColor: '#1f2937', titleFont: { size: 14, weight: 'bold' }, bodyFont: { size: 12 }, padding: 12, cornerRadius: 8, displayColors: false } }
             }
         });
     }
 
-    // 初始化所有事件监听器
+    // 事件监听初始化
     function initEventListeners() {
-        document.getElementById('send-button').addEventListener('click', sendMessage);
-        document.getElementById('user-input').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') sendMessage();
-        });
-        document.querySelectorAll('.quick-question-btn').forEach(button => {
-            button.addEventListener('click', () => {
-                const question = button.dataset.question;
-                document.getElementById('user-input').value = question;
-                sendMessage();
+        document.getElementById('send-button').addEventListener('click', sendMessageToQwen);
+        document.getElementById('user-input').addEventListener('keypress', (e) => e.key === 'Enter' && sendMessageToQwen());
+        document.querySelectorAll('.quick-question-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.getElementById('user-input').value = btn.dataset.question;
+                sendMessageToQwen();
             });
         });
     }
 
-    // Tab切换功能 (已优化)
+    // Tab切换（不变）
     function showTab(tabId) {
-        document.querySelectorAll('.tab-content').forEach(tab => {
-            tab.classList.remove('active-tab');
-        });
-        const targetTab = document.getElementById(tabId);
-        targetTab.classList.add('active-tab');
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active-tab'));
+        document.getElementById(tabId).classList.add('active-tab');
     }
 
-    // 问答知识库
-    const qaLibrary = {
-        "什么是vqe算法？": "VQE（变分量子本征求解器）是量子-经典混合算法，核心是通过迭代优化参数化量子电路（Ansatz），求解分子哈密顿量的最小本征值（基态能量），适用于NISQ量子硬件，是量子化学的核心算法。",
-        "如何安装deepquantum？": "安装步骤如下：<br>1. 创建Conda环境：<code class='bg-gray-100 text-gray-800 px-2 py-0.5 rounded'>conda create -n dqenv python=3.12 -y</code><br>2. 激活环境：<code class='bg-gray-100 text-gray-800 px-2 py-0.5 rounded'>conda activate dqenv</code><br>3. 安装PyTorch：<code class='bg-gray-100 text-gray-800 px-2 py-0.5 rounded'>pip install torch</code><br>4. 安装DeepQuantum：<code class='bg-gray-100 text-gray-800 px-2 py-0.5 rounded'>pip install deepquantum</code>",
-        "氢分子的基态能量是多少？": "通过VQE算法计算，氢分子（H₂）的基态能量约为 <strong class='text-indigo-700'>-1.137 Hartree</strong>（1 Hartree≈27.211 eV），与实验值（-1.136 Ha）的误差小于0.1%，验证了算法的准确性。",
-        "vqe为什么适用于量子化学？": "VQE适用于量子化学的两大核心原因：<br>1. 解决「维度灾难」：分子哈密顿量维度随电子数呈指数增长，经典计算机无法模拟<br>2. 适配NISQ硬件：仅需浅层电路，对量子比特数量、相干时间要求低，能容忍噪声"
-    };
-
-    // 发送消息和处理回复
-    function sendMessage() {
-        const userInputField = document.getElementById('user-input');
-        const userInput = userInputField.value.trim();
-        if (!userInput) return;
-
+    // 核心功能：发送问题到通义千问AI
+    async function sendMessageToQwen() {
+        const userInput = document.getElementById('user-input').value.trim();
+        const apiKey = document.getElementById('qwen-api-key').value.trim();
         const chatHistory = document.getElementById('chat-history');
-        
+
+        // 验证输入
+        if (!userInput) return alert('请输入你的问题！');
+        if (!apiKey) return alert('请先输入你的通义千问API密钥！');
+
+        // 1. 添加用户消息到聊天记录
         const userBubble = document.createElement('div');
         userBubble.className = 'user-bubble';
         userBubble.textContent = userInput;
         chatHistory.appendChild(userBubble);
-
-        userInputField.value = '';
+        document.getElementById('user-input').value = '';
         chatHistory.scrollTop = chatHistory.scrollHeight;
 
-        const processedInput = userInput.toLowerCase().replace(/[^\u4e00-\u9fa5a-z0-9？]/g, '');
-        const matchedKey = Object.keys(qaLibrary).find(key => key.toLowerCase() === processedInput);
+        // 2. 显示AI加载状态
+        const loadingBubble = document.createElement('div');
+        loadingBubble.className = 'loading-bubble';
+        loadingBubble.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 思考中...';
+        chatHistory.appendChild(loadingBubble);
+        chatHistory.scrollTop = chatHistory.scrollHeight;
 
-        setTimeout(() => {
+        try {
+            // 3. 调用通义千问API（核心修改：适配通义千问接口规范）
+            const response = await fetch('https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKey}` // 通义千问API密钥格式
+                },
+                body: JSON.stringify({
+                    model: 'qwen-turbo', // 通义千问免费高效模型（支持中文优化）
+                    input: {
+                        messages: [
+                            // 系统提示：严格限定VQE相关领域，确保回答专业性
+                            { 
+                                role: 'system', 
+                                content: `你是量子计算领域的专家，专注于VQE（变分量子本征求解器）算法。请遵循以下规则回答：
+1. 仅回答与VQE算法、量子化学、DeepQuantum框架、氢分子计算相关的问题；
+2. 回答需专业、准确，尽量包含原理、公式或步骤（如适用）；
+3. 对技术问题（如代码、算法细节）需给出具体解释，避免笼统回答；
+4. 若问题与量子计算无关，礼貌拒绝并引导用户提问VQE相关主题；
+5. 中文回答，语言通俗易懂，结构清晰。`
+                            },
+                            { role: 'user', content: userInput }
+                        ]
+                    },
+                    parameters: {
+                        temperature: 0.7, // 0.0-1.0，越低越严谨，越高越有创造力
+                        top_p: 0.8,       // 采样阈值，控制回答多样性
+                        result_format: 'text', // 输出纯文本格式
+                        max_tokens: 1500  // 最大回复长度（足够长文本回答）
+                    }
+                })
+            });
+
+            // 4. 处理通义千问响应（适配通义千问返回格式）
+            const data = await response.json();
+            
+            // 检查API响应是否成功
+            if (!response.ok) {
+                throw new Error(data.error?.message || `API请求失败（状态码：${response.status}）`);
+            }
+
+            // 提取AI回复内容（通义千问的响应结构：output -> choices[0] -> message -> content）
+            const aiReply = data.output?.choices?.[0]?.message?.content || 'AI回复格式异常，请重试！';
+
+            // 5. 移除加载状态，添加AI回复
+            loadingBubble.remove();
             const aiBubble = document.createElement('div');
             aiBubble.className = 'ai-bubble';
-            aiBubble.innerHTML = matchedKey ? qaLibrary[matchedKey] : 
-                "抱歉，我暂时无法回答这个问题～ 可以试试问：<br>“什么是VQE算法？” 或 “如何安装DeepQuantum？”";
+            aiBubble.innerHTML = aiReply.replace(/\n/g, '<br>'); // 换行符转为HTML换行
             chatHistory.appendChild(aiBubble);
             chatHistory.scrollTop = chatHistory.scrollHeight;
-        }, 800);
+
+        } catch (error) {
+            // 6. 错误处理（密钥错误、网络问题、API限制等）
+            loadingBubble.remove();
+            const errorBubble = document.createElement('div');
+            errorBubble.className = 'ai-bubble text-red-600';
+            errorBubble.textContent = `错误：${error.message}（请检查API密钥是否正确、网络是否正常，或是否超出免费额度）`;
+            chatHistory.appendChild(errorBubble);
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+        }
     }
 </script>
 </body>
