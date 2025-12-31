@@ -4,77 +4,112 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>量子计算VQE算法对话展示平台</title>
+    <!-- 引入现代字体 Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- 引入 Font Awesome 图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
     <style>
-        .user-bubble { background-color: #4F46E5; color: white; border-radius: 16px 16px 4px 16px; padding: 12px 16px; margin: 8px 0; max-width: 70%; align-self: flex-end; word-wrap: break-word; }
-        .ai-bubble { background-color: #E5E7EB; color: #111827; border-radius: 16px 16px 16px 4px; padding: 12px 16px; margin: 8px 0; max-width: 70%; align-self: flex-start; word-wrap: break-word; }
+        /* 全局字体设置 */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* 气泡样式微调 */
+        .user-bubble { background-color: #4338ca; color: white; border-radius: 1.25rem 1.25rem 0.25rem 1.25rem; padding: 0.75rem 1rem; margin: 0.5rem 0; max-width: 70%; align-self: flex-end; word-wrap: break-word; box-shadow: 0 4px 12px rgba(67, 56, 202, 0.2); }
+        .ai-bubble { background-color: #f3f4f6; color: #1f2937; border-radius: 1.25rem 1.25rem 1.25rem 0.25rem; padding: 0.75rem 1rem; margin: 0.5rem 0; max-width: 70%; align-self: flex-start; word-wrap: break-word; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); }
+        
+        /* 滚动条美化 */
         ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-thumb { background-color: #9CA3AF; border-radius: 3px; }
+        ::-webkit-scrollbar-track { background: #e5e7eb; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb { background-color: #9ca3af; border-radius: 3px; }
+
+        /* Tab 切换动画 */
+        .tab-content {
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+            opacity: 0;
+            transform: translateY(10px);
+            display: none;
+        }
+        .tab-content.active-tab {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        /* 针对 chat tab 的特殊处理 */
+        #chat.active-tab {
+            display: flex;
+        }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen flex flex-col">
+<body class="bg-gray-100 min-h-screen flex flex-col text-gray-800">
     <!-- 导航栏 -->
-    <nav class="bg-indigo-600 text-white p-4 shadow-md">
+    <nav class="bg-indigo-800 text-white p-4 shadow-lg">
         <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-bold">量子计算VQE算法互动展示</h1>
-            <div class="space-x-4">
-                <button onclick="showTab('intro')" class="hover:bg-indigo-700 px-3 py-1 rounded">算法介绍</button>
-                <button onclick="showTab('h2calc')" class="hover:bg-indigo-700 px-3 py-1 rounded">氢分子计算</button>
-                <button onclick="showTab('chat')" class="hover:bg-indigo-700 px-3 py-1 rounded">对话互动</button>
+            <h1 class="text-2xl font-bold tracking-tight">量子计算 VQE 算法</h1>
+            <div class="space-x-1 md:space-x-2">
+                <button onclick="showTab('intro')" class="hover:bg-indigo-700 px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2"><i class="fa-solid fa-book"></i>算法介绍</button>
+                <button onclick="showTab('h2calc')" class="hover:bg-indigo-700 px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2"><i class="fa-solid fa-flask"></i>氢分子计算</button>
+                <button onclick="showTab('chat')" class="hover:bg-indigo-700 px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2"><i class="fa-solid fa-comments"></i>对话互动</button>
             </div>
         </div>
     </nav>
 
     <!-- 主要内容区 -->
-    <main class="container mx-auto flex-1 p-4 md:p-6 min-h-[600px]">
+    <main class="container mx-auto flex-1 p-4 md:p-8">
         <!-- 1. 算法介绍Tab -->
-        <div id="intro" class="tab-content" style="display: block;">
-            <div class="bg-white rounded-xl shadow-md p-6 mb-6">
-                <h2 class="text-xl font-bold text-indigo-600 mb-4">VQE算法核心原理</h2>
-                <div class="grid md:grid-cols-2 gap-6">
+        <div id="intro" class="tab-content active-tab">
+            <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-8">
+                <h2 class="text-2xl font-bold text-indigo-700 mb-6 flex items-center gap-3"><i class="fa-solid fa-atom"></i>VQE 算法核心原理</h2>
+                <div class="grid md:grid-cols-2 gap-8">
                     <div>
-                        <h3 class="text-lg font-semibold mb-2">什么是VQE？</h3>
-                        <p class="text-gray-700 mb-3">变分量子本征求解器（VQE）是量子-经典混合算法，用于求解分子体系的基态能量，是NISQ时代的核心量子化学算法。</p>
-                        <h3 class="text-lg font-semibold mb-2">核心流程</h3>
-                        <ol class="list-decimal list-inside text-gray-700 space-y-1 mb-3">
+                        <h3 class="text-xl font-semibold mb-3 text-gray-700">什么是 VQE？</h3>
+                        <p class="text-gray-600 mb-4 leading-relaxed">变分量子本征求解器（VQE）是量子-经典混合算法，用于求解分子体系的基态能量，是 NISQ 时代的核心量子化学算法。</p>
+                        
+                        <h3 class="text-xl font-semibold mb-3 text-gray-700">核心流程</h3>
+                        <ol class="list-decimal list-inside text-gray-600 space-y-2 mb-4 pl-2">
                             <li>构造参数化量子电路（Ansatz）制备试验波函数</li>
                             <li>测量哈密顿量的期望值 \(E(\theta) = \langle\psi(\theta)|H|\psi(\theta)\rangle\)</li>
                             <li>经典优化器更新参数，最小化能量</li>
                             <li>迭代收敛，得到基态能量</li>
                         </ol>
-                        <h3 class="text-lg font-semibold mb-2">为何适用于量子化学？</h3>
-                        <ul class="list-disc list-inside text-gray-700 space-y-1">
+                        
+                        <h3 class="text-xl font-semibold mb-3 text-gray-700">为何适用于量子化学？</h3>
+                        <ul class="list-disc list-inside text-gray-600 space-y-2 pl-2">
                             <li>解决经典计算机的"维度灾难"（指数级增长的哈密顿量维度）</li>
-                            <li>仅需浅层量子电路，适配NISQ硬件（噪声大、相干时间短）</li>
+                            <li>仅需浅层量子电路，适配 NISQ 硬件（噪声大、相干时间短）</li>
                         </ul>
                     </div>
-                    <div class="bg-gray-50 p-4 rounded-lg">
-                        <h3 class="text-lg font-semibold mb-2">VQE算法流程图</h3>
-                        <div class="mermaid h-64">
+                    <div class="bg-gray-50 p-6 rounded-xl border border-gray-200 flex flex-col justify-center">
+                        <h3 class="text-xl font-semibold mb-4 text-gray-700 text-center">VQE 算法流程图</h3>
+                        <div class="mermaid h-72">
                             graph TD
-                                A["初始化参数θ"] --> B["制备量子态|ψ(θ)>"]
-                                B --> C["测量哈密顿量期望值E(θ)"]
-                                C --> D["经典优化器更新θ"]
+                                A["初始化参数 θ"] --> B["制备量子态 |ψ(θ)⟩"]
+                                B --> C["测量哈密顿量期望值 E(θ)"]
+                                C --> D["经典优化器更新 θ"]
                                 D --> F{"能量收敛？"}
                                 F -- 否 --> B
-                                F -- 是 --> G["输出基态能量E₀"]
+                                F -- 是 --> G["输出基态能量 E₀"]
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="bg-white rounded-xl shadow-md p-6">
-                <h2 class="text-xl font-bold text-indigo-600 mb-4">DeepQuantum安装指南</h2>
-                <pre class="bg-gray-100 p-4 rounded-lg overflow-x-auto text-sm text-gray-800">
-# 1. 创建并激活Conda环境
+            
+            <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                <h2 class="text-2xl font-bold text-indigo-700 mb-6 flex items-center gap-3"><i class="fa-solid fa-code"></i>DeepQuantum 安装指南</h2>
+                <pre class="bg-gray-900 text-gray-100 p-4 md:p-6 rounded-xl overflow-x-auto text-sm leading-relaxed font-mono">
+# 1. 创建并激活 Conda 环境
 conda create -n dqenv python=3.12 -y
 conda activate dqenv
 
-# 2. 安装PyTorch
+# 2. 安装 PyTorch
 pip install torch
 
-# 3. 安装DeepQuantum（二选一）
+# 3. 安装 DeepQuantum（二选一）
 # 基础版
 pip install deepquantum
 # 开发者版
@@ -83,34 +118,28 @@ pip install deepquantum[dev]</pre>
         </div>
 
         <!-- 2. 氢分子计算Tab -->
-        <div id="h2calc" class="tab-content" style="display: none;">
-            <div class="bg-white rounded-xl shadow-md p-6 mb-6">
-                <h2 class="text-xl font-bold text-indigo-600 mb-4">氢分子（H₂）基态能量计算</h2>
-                <div class="grid md:grid-cols-2 gap-6">
+        <div id="h2calc" class="tab-content">
+            <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                <h2 class="text-2xl font-bold text-indigo-700 mb-6 flex items-center gap-3"><i class="fa-solid fa-molecule-water"></i>氢分子（H₂）基态能量计算</h2>
+                <div class="grid md:grid-cols-2 gap-8">
                     <div>
-                        <h3 class="text-lg font-semibold mb-2">氢分子哈密顿量（2量子比特）</h3>
-                        <div class="bg-gray-50 p-4 rounded-lg mb-4">
-                            <p class="text-gray-700 mb-1">H = -1.05237·(I⊗I) + 0.39794·(I⊗Z)</p>
-                            <p class="text-gray-700 mb-1">  - 0.39794·(Z⊗I) - 0.01128·(Z⊗Z)</p>
-                            <p class="text-gray-700">  + 0.18093·(X⊗X)</p>
+                        <h3 class="text-xl font-semibold mb-4 text-gray-700">氢分子哈密顿量</h3>
+                        <div class="bg-indigo-50 border border-indigo-200 p-5 rounded-xl mb-6">
+                            <p class="text-gray-700 font-mono text-lg">H = -1.05237·(I⊗I) + 0.39794·(I⊗Z)</p>
+                            <p class="text-gray-700 font-mono text-lg mt-1">  - 0.39794·(Z⊗I) - 0.01128·(Z⊗Z)</p>
+                            <p class="text-gray-700 font-mono text-lg mt-1">  + 0.18093·(X⊗X)</p>
                         </div>
-                        <h3 class="text-lg font-semibold mb-2">Ansatz电路设计（示例）</h3>
-                        <div class="mermaid h-48 mb-4">
-                            graph LR
-                                q0["|0⟩"] --> RY1["RY(θ₀)"] --> CNOT1["CNOT"] --> RY3["RY(θ₂)"]
-                                q1["|0⟩"] --> RY2["RY(θ₁)"] --> CNOT1 --> RY4["RY(θ₃)"]
-                        </div>
-                        <p class="text-gray-700 text-sm">注：使用RY旋转门（参数可调）和CNOT纠缠门，共4个可调参数</p>
+                        <p class="text-gray-600 italic">通过量子化学软件（如 PySCF）结合量子比特化（如 Jordan-Wigner 变换）得到。</p>
                     </div>
                     <div>
-                        <h3 class="text-lg font-semibold mb-2">能量收敛曲线（模拟结果）</h3>
-                        <div class="h-64">
+                        <h3 class="text-xl font-semibold mb-4 text-gray-700">能量收敛曲线</h3>
+                        <div class="h-72 bg-gray-50 p-4 rounded-xl border border-gray-200">
                             <canvas id="energyChart"></canvas>
                         </div>
-                        <div class="bg-indigo-50 p-4 rounded-lg mt-4">
-                            <h3 class="text-lg font-semibold mb-2">计算结果</h3>
-                            <p class="text-gray-700 mb-1">最终收敛基态能量：<span class="font-bold text-indigo-600">-1.137 Ha</span></p>
-                            <p class="text-gray-700 text-sm">（1 Hartree ≈ 27.211 eV，实验值约-1.136 Ha，误差小于0.1%）</p>
+                        <div class="bg-green-50 border border-green-200 p-5 rounded-xl mt-6">
+                            <h3 class="text-lg font-semibold mb-2 text-gray-700">计算结果</h3>
+                            <p class="text-gray-700 mb-1">最终收敛基态能量：<span class="font-bold text-green-700 text-xl">-1.137 Ha</span></p>
+                            <p class="text-gray-600 text-sm">（1 Hartree ≈ 27.211 eV，实验值约 -1.136 Ha，误差小于 0.1%）</p>
                         </div>
                     </div>
                 </div>
@@ -118,47 +147,50 @@ pip install deepquantum[dev]</pre>
         </div>
 
         <!-- 3. 对话互动Tab -->
-        <div id="chat" class="tab-content" style="display: none; flex-direction: column; height: 600px;">
-            <div class="bg-white rounded-xl shadow-md p-4 mb-4 flex-1 overflow-y-auto flex flex-col" id="chat-history">
+        <div id="chat" class="tab-content" style="flex-direction: column; height: 80vh; max-height: 800px;">
+            <div class="bg-white rounded-2xl shadow-lg p-4 md:p-6 mb-6 flex-1 overflow-y-auto flex flex-col" id="chat-history">
                 <div class="ai-bubble">
-                    你好！我是量子计算VQE算法助手～ 可以问我关于VQE原理、DeepQuantum安装、氢分子计算的问题，比如：
-                    <br>1. 什么是VQE算法？
-                    <br>2. 如何安装DeepQuantum？
+                    你好！我是量子计算 VQE 算法助手～ 可以问我关于 VQE 原理、DeepQuantum 安装、氢分子计算的问题，比如：
+                    <br>1. 什么是 VQE 算法？
+                    <br>2. 如何安装 DeepQuantum？
                     <br>3. 氢分子的基态能量是多少？
-                    <br>4. 如何设计Ansatz电路？
                 </div>
             </div>
-            <div class="flex space-x-2">
-                <input type="text" id="user-input" placeholder="输入你的问题..." class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                <button id="send-button" class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors">发送</button>
-            </div>
-            <div class="flex flex-wrap gap-2 mt-3">
-                <button class="quick-question-btn bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded text-sm" data-question="什么是VQE算法？">什么是VQE算法？</button>
-                <button class="quick-question-btn bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded text-sm" data-question="如何安装DeepQuantum？">如何安装DeepQuantum？</button>
-                <button class="quick-question-btn bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded text-sm" data-question="氢分子的基态能量是多少？">氢分子基态能量？</button>
-                <button class="quick-question-btn bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded text-sm" data-question="Ansatz电路怎么设计？">Ansatz电路设计？</button>
-                <button class="quick-question-btn bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded text-sm" data-question="VQE为什么适用于量子化学？">VQE的优势？</button>
+            <div class="flex flex-col gap-4">
+                <div class="flex space-x-3">
+                    <input type="text" id="user-input" placeholder="输入你的问题..." class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-700">
+                    <button id="send-button" class="bg-indigo-700 text-white px-6 py-3 rounded-lg hover:bg-indigo-800 transition-colors flex items-center gap-2 font-semibold"><i class="fa-solid fa-paper-plane"></i>发送</button>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <span class="text-sm text-gray-500 font-medium">快速提问:</span>
+                    <button class="quick-question-btn bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg text-sm text-gray-700 transition-colors" data-question="什么是VQE算法？">什么是VQE算法？</button>
+                    <button class="quick-question-btn bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg text-sm text-gray-700 transition-colors" data-question="如何安装DeepQuantum？">安装DeepQuantum</button>
+                    <button class="quick-question-btn bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg text-sm text-gray-700 transition-colors" data-question="氢分子的基态能量是多少？">氢分子能量？</button>
+                    <button class="quick-question-btn bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg text-sm text-gray-700 transition-colors" data-question="VQE为什么适用于量子化学？">VQE的优势？</button>
+                </div>
             </div>
         </div>
     </main>
 
-    <footer class="bg-indigo-600 text-white p-4 mt-8">
-        <div class="container mx-auto text-center">
-            <p>量子计算VQE算法课堂展示平台 | 基于DeepQuantum框架</p>
+    <footer class="bg-indigo-800 text-white p-6 mt-auto">
+        <div class="container mx-auto text-center text-gray-300">
+            <p>量子计算 VQE 算法互动平台 &copy; 2024 | 基于 DeepQuantum 框架</p>
         </div>
     </footer>
 
 <script>
     // 全局DOM加载完成后执行初始化
     document.addEventListener('DOMContentLoaded', () => {
+        // 初始化Mermaid
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'neutral',
+            flowchart: { useMaxWidth: true, htmlLabels: true }
+        });
         // 初始化图表
         initEnergyChart();
-        // 初始化Mermaid
-        mermaid.initialize({startOnLoad: true});
         // 初始化事件监听器
         initEventListeners();
-        // 首次加载时，渲染默认显示的Tab中的Mermaid图
-        renderMermaidInTab('intro');
     });
 
     // 初始化能量收敛曲线图
@@ -177,36 +209,53 @@ pip install deepquantum[dev]</pre>
                         -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137,
                         -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137
                     ],
-                    borderColor: '#4F46E5',
-                    backgroundColor: 'rgba(79, 70, 229, 0.1)',
-                    borderWidth: 2,
-                    tension: 0.3,
+                    borderColor: '#4338ca',
+                    backgroundColor: 'rgba(67, 56, 202, 0.1)',
+                    borderWidth: 3,
+                    pointBackgroundColor: '#4338ca',
+                    pointBorderColor: '#fff',
+                    pointHoverRadius: 6,
+                    pointRadius: 4,
+                    tension: 0.4,
                     fill: true
                 }]
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: false, // 允许图表根据容器高度调整
+                maintainAspectRatio: false,
                 scales: {
-                    y: { title: { display: true, text: '能量（Hartree）' }, min: -1.2, max: -0.7 },
-                    x: { title: { display: true, text: '迭代次数' } }
+                    y: { 
+                        title: { display: true, text: '能量（Hartree）', font: { size: 14 } }, 
+                        min: -1.2, 
+                        max: -0.7,
+                        grid: { color: 'rgba(0, 0, 0, 0.05)' }
+                    },
+                    x: { 
+                        title: { display: true, text: '迭代次数', font: { size: 14 } },
+                        grid: { display: false }
+                    }
                 },
-                plugins: { legend: { display: false } }
+                plugins: { 
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#1f2937',
+                        titleFont: { size: 14, weight: 'bold' },
+                        bodyFont: { size: 12 },
+                        padding: 12,
+                        cornerRadius: 8,
+                        displayColors: false
+                    }
+                }
             }
         });
     }
 
     // 初始化所有事件监听器
     function initEventListeners() {
-        // 为发送按钮绑定点击事件
         document.getElementById('send-button').addEventListener('click', sendMessage);
-        
-        // 为输入框绑定回车键事件
         document.getElementById('user-input').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') sendMessage();
         });
-
-        // 为所有快捷问题按钮绑定点击事件
         document.querySelectorAll('.quick-question-btn').forEach(button => {
             button.addEventListener('click', () => {
                 const question = button.dataset.question;
@@ -216,47 +265,20 @@ pip install deepquantum[dev]</pre>
         });
     }
 
-    // Tab切换功能 (已修复)
+    // Tab切换功能 (已优化)
     function showTab(tabId) {
         document.querySelectorAll('.tab-content').forEach(tab => {
-            tab.style.display = 'none';
+            tab.classList.remove('active-tab');
         });
         const targetTab = document.getElementById(tabId);
-        if (tabId === 'chat') {
-            targetTab.style.display = 'flex';
-        } else {
-            targetTab.style.display = 'block';
-        }
-
-        // 关键修复：当Tab显示后，渲染其中的Mermaid图表
-        renderMermaidInTab(tabId);
-    }
-
-    // 辅助函数：渲染指定Tab内的所有Mermaid图表
-    function renderMermaidInTab(tabId) {
-        const targetTab = document.getElementById(tabId);
-        if (!targetTab) return;
-
-        const mermaidElements = targetTab.querySelectorAll('.mermaid');
-        mermaidElements.forEach(el => {
-            // 确保Mermaid库已加载
-            if (typeof mermaid !== 'undefined' && mermaid.render) {
-                // 使用 mermaid.render API 手动渲染
-                // el.textContent 包含了图表的代码
-                // 回调函数接收生成的SVG代码
-                mermaid.render(`mermaid-${Date.now()}`, el.textContent, (svgCode) => {
-                    el.innerHTML = svgCode;
-                });
-            }
-        });
+        targetTab.classList.add('active-tab');
     }
 
     // 问答知识库
     const qaLibrary = {
         "什么是vqe算法？": "VQE（变分量子本征求解器）是量子-经典混合算法，核心是通过迭代优化参数化量子电路（Ansatz），求解分子哈密顿量的最小本征值（基态能量），适用于NISQ量子硬件，是量子化学的核心算法。",
-        "如何安装deepquantum？": "安装步骤如下：<br>1. 创建Conda环境：<code>conda create -n dqenv python=3.12 -y</code><br>2. 激活环境：<code>conda activate dqenv</code><br>3. 安装PyTorch：<code>pip install torch</code><br>4. 安装DeepQuantum：<code>pip install deepquantum</code>（基础版）或<code>pip install deepquantum[dev]</code>（开发者版）",
-        "氢分子的基态能量是多少？": "通过VQE算法计算，氢分子（H₂）的基态能量约为 <strong>-1.137 Hartree</strong>（1 Hartree≈27.211 eV），与实验值（-1.136 Ha）的误差小于0.1%，验证了算法的准确性。",
-        "ansatz电路怎么设计？": "Ansatz是参数化量子电路，核心是「旋转门+纠缠门」的组合：<br>1. 旋转门（RX/RY/RZ）：引入可调参数，用于调整量子态<br>2. 纠缠门（CNOT/CZ）：实现量子比特间的关联，增加态空间表达能力<br>示例结构：RY(θ₀)→RY(θ₁)→CNOT→RY(θ₂)→RY(θ₃)（2量子比特）",
+        "如何安装deepquantum？": "安装步骤如下：<br>1. 创建Conda环境：<code class='bg-gray-100 text-gray-800 px-2 py-0.5 rounded'>conda create -n dqenv python=3.12 -y</code><br>2. 激活环境：<code class='bg-gray-100 text-gray-800 px-2 py-0.5 rounded'>conda activate dqenv</code><br>3. 安装PyTorch：<code class='bg-gray-100 text-gray-800 px-2 py-0.5 rounded'>pip install torch</code><br>4. 安装DeepQuantum：<code class='bg-gray-100 text-gray-800 px-2 py-0.5 rounded'>pip install deepquantum</code>",
+        "氢分子的基态能量是多少？": "通过VQE算法计算，氢分子（H₂）的基态能量约为 <strong class='text-indigo-700'>-1.137 Hartree</strong>（1 Hartree≈27.211 eV），与实验值（-1.136 Ha）的误差小于0.1%，验证了算法的准确性。",
         "vqe为什么适用于量子化学？": "VQE适用于量子化学的两大核心原因：<br>1. 解决「维度灾难」：分子哈密顿量维度随电子数呈指数增长，经典计算机无法模拟<br>2. 适配NISQ硬件：仅需浅层电路，对量子比特数量、相干时间要求低，能容忍噪声"
     };
 
@@ -268,30 +290,20 @@ pip install deepquantum[dev]</pre>
 
         const chatHistory = document.getElementById('chat-history');
         
-        // 1. 添加用户消息到聊天记录
         const userBubble = document.createElement('div');
         userBubble.className = 'user-bubble';
         userBubble.textContent = userInput;
         chatHistory.appendChild(userBubble);
 
-        // 清空输入框并滚动到底部
         userInputField.value = '';
         chatHistory.scrollTop = chatHistory.scrollHeight;
 
-        // 2. 查找并显示AI回复
-        // 将用户输入转为小写，并移除所有非字母、数字、中文和问号的字符
         const processedInput = userInput.toLowerCase().replace(/[^\u4e00-\u9fa5a-z0-9？]/g, '');
-        
-        // 在知识库中查找匹配的问题
-        const matchedKey = Object.keys(qaLibrary).find(key => 
-            key.toLowerCase() === processedInput
-        );
+        const matchedKey = Object.keys(qaLibrary).find(key => key.toLowerCase() === processedInput);
 
-        // 模拟AI思考延迟
         setTimeout(() => {
             const aiBubble = document.createElement('div');
             aiBubble.className = 'ai-bubble';
-            // 如果找到匹配的回答，则显示它，否则显示默认信息
             aiBubble.innerHTML = matchedKey ? qaLibrary[matchedKey] : 
                 "抱歉，我暂时无法回答这个问题～ 可以试试问：<br>“什么是VQE算法？” 或 “如何安装DeepQuantum？”";
             chatHistory.appendChild(aiBubble);
