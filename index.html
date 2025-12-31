@@ -19,9 +19,22 @@
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #e5e7eb; border-radius: 3px; }
         ::-webkit-scrollbar-thumb { background-color: #9ca3af; border-radius: 3px; }
-        .tab-content { transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out; opacity: 0; transform: translateY(10px); display: none; }
-        .tab-content.active-tab { display: block; opacity: 1; transform: translateY(0); }
-        #chat.active-tab { display: flex; }
+        /* 修复Tab切换的CSS逻辑 */
+        .tab-content {
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+            opacity: 0;
+            transform: translateY(10px);
+            display: none; /* 默认隐藏 */
+        }
+        .tab-content.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        /* 单独处理AI对话Tab的flex显示 */
+        #chat.tab-content.active {
+            display: flex;
+        }
         .api-key-input { border: 1px solid #ddd; border-radius: 0.5rem; padding: 0.5rem; width: 100%; margin-top: 0.5rem; }
         .api-hint { font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem; }
         .code-block { background-color: #1f2937; color: #f9fafb; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; font-family: 'Courier New', Courier, monospace; margin: 0.5rem 0; }
@@ -34,17 +47,24 @@
         <div class="container mx-auto flex justify-between items-center">
             <h1 class="text-2xl font-bold tracking-tight">量子计算 VQE 算法（混合AI版）</h1>
             <div class="space-x-1 md:space-x-2">
-                <button onclick="showTab('intro')" class="hover:bg-indigo-700 px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2"><i class="fa-solid fa-book"></i>算法介绍</button>
-                <button onclick="showTab('h2calc')" class="hover:bg-indigo-700 px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2"><i class="fa-solid fa-flask"></i>氢分子计算</button>
-                <button onclick="showTab('chat')" class="hover:bg-indigo-700 px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2"><i class="fa-solid fa-comments"></i>AI对话</button>
+                <!-- 修复按钮的onclick逻辑，确保类名匹配 -->
+                <button onclick="switchTab('intro')" class="hover:bg-indigo-700 px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2">
+                    <i class="fa-solid fa-book"></i>算法介绍
+                </button>
+                <button onclick="switchTab('h2calc')" class="hover:bg-indigo-700 px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2">
+                    <i class="fa-solid fa-flask"></i>氢分子计算
+                </button>
+                <button onclick="switchTab('chat')" class="hover:bg-indigo-700 px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2">
+                    <i class="fa-solid fa-comments"></i>AI对话
+                </button>
             </div>
         </div>
     </nav>
 
     <!-- 主要内容区 -->
     <main class="container mx-auto flex-1 p-4 md:p-8">
-        <!-- 1. 算法介绍Tab -->
-        <div id="intro" class="tab-content active-tab">
+        <!-- 1. 算法介绍Tab（修复类名：active） -->
+        <div id="intro" class="tab-content active">
             <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-8">
                 <h2 class="text-2xl font-bold text-indigo-700 mb-6 flex items-center gap-3"><i class="fa-solid fa-atom"></i>VQE 算法核心原理</h2>
                 <div class="grid md:grid-cols-1 gap-8">
@@ -96,7 +116,7 @@ pip install deepquantum[dev]</pre>
             </div>
         </div>
 
-        <!-- 2. 氢分子计算Tab -->
+        <!-- 2. 氢分子计算Tab（默认隐藏） -->
         <div id="h2calc" class="tab-content">
             <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
                 <h2 class="text-2xl font-bold text-indigo-700 mb-6 flex items-center gap-3"><i class="fa-solid fa-molecule-water"></i>氢分子（H₂）基态能量计算</h2>
@@ -125,7 +145,7 @@ pip install deepquantum[dev]</pre>
             </div>
         </div>
 
-        <!-- 3. 混合AI对话Tab -->
+        <!-- 3. 混合AI对话Tab（默认隐藏） -->
         <div id="chat" class="tab-content" style="flex-direction: column; height: 80vh; max-height: 800px;">
             <div class="bg-white rounded-2xl shadow-lg p-4 md:p-6 mb-6 flex-1 overflow-y-auto flex flex-col" id="chat-history">
                 <div class="ai-bubble">
@@ -171,8 +191,14 @@ pip install deepquantum[dev]</pre>
     </footer>
 
 <script>
+    // 确保页面加载完成后再执行初始化
     document.addEventListener('DOMContentLoaded', () => {
-        initEnergyChart();
+        // 初始化能量图表（增加错误捕获，避免影响其他功能）
+        try {
+            initEnergyChart();
+        } catch (e) {
+            console.warn("能量图表初始化失败（不影响Tab切换）:", e);
+        }
         initEventListeners();
     });
 
@@ -180,7 +206,36 @@ pip install deepquantum[dev]</pre>
     function initEnergyChart() {
         const ctx = document.getElementById('energyChart').getContext('2d');
         new Chart(ctx, {
-            type: 'line', data: { labels: Array.from({length: 50}, (_, i) => i+1), datasets: [{ label: '能量值（Hartree）', data: [-0.8, -0.85, -0.92, -0.98, -1.03, -1.07, -1.09, -1.11, -1.12, -1.125, -1.13, -1.132, -1.134, -1.135, -1.136, -1.1365, -1.1368, -1.1369, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137], borderColor: '#4338ca', backgroundColor: 'rgba(67, 56, 202, 0.1)', borderWidth: 3, pointBackgroundColor: '#4338ca', pointBorderColor: '#fff', pointHoverRadius: 6, pointRadius: 4, tension: 0.4, fill: true }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { title: { display: true, text: '能量（Hartree）', font: { size: 14 } }, grid: { color: 'rgba(0, 0, 0, 0.05)' } }, x: { title: { display: true, text: '迭代次数', font: { size: 14 } }, grid: { display: false } } }, plugins: { legend: { display: false }, tooltip: { backgroundColor: '#1f2937', titleFont: { size: 14, weight: 'bold' }, bodyFont: { size: 12 }, padding: 12, cornerRadius: 8, displayColors: false } } });
+            type: 'line', 
+            data: { 
+                labels: Array.from({length: 50}, (_, i) => i+1), 
+                datasets: [{ 
+                    label: '能量值（Hartree）', 
+                    data: [-0.8, -0.85, -0.92, -0.98, -1.03, -1.07, -1.09, -1.11, -1.12, -1.125, -1.13, -1.132, -1.134, -1.135, -1.136, -1.1365, -1.1368, -1.1369, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137, -1.137], 
+                    borderColor: '#4338ca', 
+                    backgroundColor: 'rgba(67, 56, 202, 0.1)', 
+                    borderWidth: 3, 
+                    pointBackgroundColor: '#4338ca', 
+                    pointBorderColor: '#fff', 
+                    pointHoverRadius: 6, 
+                    pointRadius: 4, 
+                    tension: 0.4, 
+                    fill: true 
+                }] 
+            }, 
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false, 
+                scales: { 
+                    y: { title: { display: true, text: '能量（Hartree）', font: { size: 14 } }, grid: { color: 'rgba(0, 0, 0, 0.05)' } }, 
+                    x: { title: { display: true, text: '迭代次数', font: { size: 14 } }, grid: { display: false } } 
+                }, 
+                plugins: { 
+                    legend: { display: false }, 
+                    tooltip: { backgroundColor: '#1f2937', titleFont: { size: 14, weight: 'bold' }, bodyFont: { size: 12 }, padding: 12, cornerRadius: 8, displayColors: false } 
+                } 
+            }
+        });
     }
 
     function initEventListeners() {
@@ -194,9 +249,17 @@ pip install deepquantum[dev]</pre>
         });
     }
 
-    function showTab(tabId) {
-        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active-tab'));
-        document.getElementById(tabId).classList.add('active-tab');
+    // --- 修复后的Tab切换函数 ---
+    function switchTab(tabId) {
+        // 隐藏所有Tab
+        document.querySelectorAll('.tab-content').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        // 显示目标Tab
+        const targetTab = document.getElementById(tabId);
+        if (targetTab) {
+            targetTab.classList.add('active');
+        }
     }
 
     function addMessageToChat(sender, content, isHtml = false) {
@@ -226,42 +289,28 @@ pip install deepquantum[dev]</pre>
     }
 
     // --- AI核心逻辑 ---
-
-    /**
-     * 主发送函数，负责路由到不同的AI
-     */
     async function sendMessage() {
         const userInput = document.getElementById('user-input').value.trim();
         const apiKey = document.getElementById('qwen-api-key').value.trim();
 
         if (!userInput) return;
 
-        // 添加用户消息
         addMessageToChat('user', userInput);
         document.getElementById('user-input').value = '';
 
-        // 路由决策
         if (apiKey && apiKey.startsWith('sk-')) {
-            // 使用真正的AI
             await callRealAI(userInput, apiKey);
         } else {
-            // 使用本地伪AI
             callLocalAI(userInput);
         }
     }
 
-    /**
-     * 调用本地伪AI（专家系统）
-     */
     function callLocalAI(userInput) {
         const botReply = getBotResponse(userInput);
         const aiBubble = addMessageToChat('ai', '');
         typeWriterEffect(aiBubble, botReply);
     }
 
-    /**
-     * 调用真正的AI（通义千问API）
-     */
     async function callRealAI(userInput, apiKey) {
         const loadingBubble = addMessageToChat('ai', '<i class="fa-solid fa-spinner fa-spin mr-2"></i>正在连接通义千问...');
 
@@ -320,40 +369,6 @@ pip install deepquantum[dev]</pre>
             responses: [
                 "DeepQuantum是一个基于PyTorch的开源量子机器学习框架。\n\n**安装步骤**：\n```bash\n# 1. 创建并激活Conda环境\nconda create -n dqenv python=3.9 -y\nconda activate dqenv\n\n# 2. 安装PyTorch\npip install torch\n\n# 3. 安装DeepQuantum\npip install deepquantum\n```\n更多信息请访问其GitHub仓库。"
             ]
-        },
-        {
-            patterns: ["Ansatz", "什么是Ansatz", "量子电路Ansatz"],
-            responses: [
-                "在VQE中，Ansatz（试探波函数）是一个参数化的量子电路。它的作用是在所有可能的量子态构成的希尔伯特空间中，智能地搜索一个能够很好地近似目标基态的量子态|ψ(θ)⟩。电路中的参数θ由经典优化器进行调整。设计一个好的Ansatz是VQE成功的关键。"
-            ]
-        },
-        {
-            patterns: ["哈密顿量", "什么是哈密顿量"],
-            responses: [
-                "在量子力学中，哈密顿量（Hamiltonian）是一个描述系统总能量的算符，通常记作H。它包含了系统中所有粒子的动能和势能信息。在VQE中，我们的目标就是找到哈密顿量的最小特征值，即基态能量。"
-            ]
-        },
-        {
-            patterns: ["NISQ", "什么是NISQ"],
-            responses: [
-                "NISQ是Noisy Intermediate-Scale Quantum（嘈杂中等规模量子）的缩写。它指的是当前一代的量子计算机，它们还不够强大到运行大规模的容错量子算法，但已经能够执行一些特定的量子算法。VQE正是为这类设备量身定制的算法之一。"
-            ]
-        },
-        {
-            patterns: ["VQE的应用", "VQE能做什么"],
-            responses: [
-                "VQE的主要应用是在**量子化学**和**材料科学**领域，用于计算分子和材料的**基态能量**。这对于理解化学反应、设计新药物和发现新型材料（如高温超导体、高效太阳能电池材料）具有革命性的潜力。"
-            ]
-        },
-        {
-            patterns: ["VQE与QAOA", "VQE和QAOA的区别"],
-            responses: [
-                "VQE和QAOA都是重要的量子-经典混合算法，但目标不同。\n- **VQE (变分量子本征求解器)**：主要用于求解**基态能量**问题（特征值问题），如分子能量计算。\n- **QAOA (量子近似优化算法)**：主要用于求解**组合优化**问题，如最大割问题、旅行商问题等。\n两者都使用参数化量子电路和经典优化器，但它们的Ansatz结构和优化目标函数是不同的。"
-            ]
-        },
-        {
-            patterns: ["再见", "拜拜", "结束对话"],
-            responses: ["再见！如果还有其他问题，随时可以来找我。", "拜拜！祝你研究顺利！"]
         }
     ];
 
