@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+    <!-- Mermaid 库已不再需要，已移除 -->
     <style>
         /* 全局字体设置 */
         body {
@@ -65,13 +65,14 @@
         <div id="intro" class="tab-content active-tab">
             <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-8">
                 <h2 class="text-2xl font-bold text-indigo-700 mb-6 flex items-center gap-3"><i class="fa-solid fa-atom"></i>VQE 算法核心原理</h2>
-                <div class="grid md:grid-cols-2 gap-8">
+                <!-- 布局已从两列改为一列，并优化了内容 -->
+                <div class="grid md:grid-cols-1 gap-8">
                     <div>
                         <h3 class="text-xl font-semibold mb-3 text-gray-700">什么是 VQE？</h3>
-                        <p class="text-gray-600 mb-4 leading-relaxed">变分量子本征求解器（VQE）是量子-经典混合算法，用于求解分子体系的基态能量，是 NISQ 时代的核心量子化学算法。</p>
+                        <p class="text-gray-600 mb-6 leading-relaxed">变分量子本征求解器（VQE）是量子-经典混合算法，用于求解分子体系的基态能量，是 NISQ 时代的核心量子化学算法。</p>
                         
                         <h3 class="text-xl font-semibold mb-3 text-gray-700">核心流程</h3>
-                        <ol class="list-decimal list-inside text-gray-600 space-y-2 mb-4 pl-2">
+                        <ol class="list-decimal list-inside text-gray-600 space-y-2 mb-6 pl-2">
                             <li>构造参数化量子电路（Ansatz）制备试验波函数</li>
                             <li>测量哈密顿量的期望值 \(E(\theta) = \langle\psi(\theta)|H|\psi(\theta)\rangle\)</li>
                             <li>经典优化器更新参数，最小化能量</li>
@@ -84,17 +85,15 @@
                             <li>仅需浅层量子电路，适配 NISQ 硬件（噪声大、相干时间短）</li>
                         </ul>
                     </div>
-                    <div class="bg-gray-50 p-6 rounded-xl border border-gray-200 flex flex-col justify-center">
-                        <h3 class="text-xl font-semibold mb-4 text-gray-700 text-center">VQE 算法流程图</h3>
-                        <div class="mermaid h-72">
-                            graph TD
-                                A["初始化参数 θ"] --> B["制备量子态 |ψ(θ)⟩"]
-                                B --> C["测量哈密顿量期望值 E(θ)"]
-                                C --> D["经典优化器更新 θ"]
-                                D --> F{"能量收敛？"}
-                                F -- 否 --> B
-                                F -- 是 --> G["输出基态能量 E₀"]
-                        </div>
+                    <!-- 流程图已被移除，替换为一个视觉强调区块 -->
+                    <div class="bg-gradient-to-br from-indigo-500 to-purple-600 p-6 rounded-xl border border-gray-200 flex flex-col justify-center text-white">
+                        <h3 class="text-xl font-semibold mb-4 text-center">核心思想</h3>
+                        <p class="text-center text-lg font-medium leading-relaxed">
+                            <i class="fa-solid fa-atom mr-2"></i>
+                            <span class="font-bold">量子-经典混合</span>
+                            <br>
+                            量子处理器负责态制备与测量，经典计算机负责优化迭代，强强联合，高效求解。
+                        </p>
                     </div>
                 </div>
             </div>
@@ -181,12 +180,7 @@ pip install deepquantum[dev]</pre>
 <script>
     // 全局DOM加载完成后执行初始化
     document.addEventListener('DOMContentLoaded', () => {
-        // 初始化Mermaid
-        mermaid.initialize({
-            startOnLoad: true,
-            theme: 'neutral',
-            flowchart: { useMaxWidth: true, htmlLabels: true }
-        });
+        // Mermaid 初始化已移除
         // 初始化图表
         initEnergyChart();
         // 初始化事件监听器
@@ -226,8 +220,6 @@ pip install deepquantum[dev]</pre>
                 scales: {
                     y: { 
                         title: { display: true, text: '能量（Hartree）', font: { size: 14 } }, 
-                        min: -1.2, 
-                        max: -0.7,
                         grid: { color: 'rgba(0, 0, 0, 0.05)' }
                     },
                     x: { 
