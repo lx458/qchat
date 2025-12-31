@@ -75,7 +75,7 @@
                         <h3 class="text-xl font-semibold mb-3 text-gray-700">核心流程</h3>
                         <ol class="list-decimal list-inside text-gray-600 space-y-2 mb-6 pl-2">
                             <li>构造参数化量子电路（Ansatz）制备试验波函数</li>
-                            <li>测量哈密顿量的期望值 </li>
+                            <li>测量哈密顿量的期望值 \(E(\theta) = \langle\psi(\theta)|H|\psi(\theta)\rangle\)</li>
                             <li>经典优化器更新参数，最小化能量</li>
                             <li>迭代收敛，得到基态能量</li>
                         </ol>
@@ -152,8 +152,9 @@ pip install deepquantum[dev]</pre>
                     你好！我是量子计算 VQE 算法AI助手（混合模式）。
                     <br><br>
                     <strong>使用说明：</strong>
-                    <ul class="list-disc pl-5 mt-2 space-y-1">                     
-                        <li>如果你输入 <strong>API密钥</strong>，我将切换到更强大的AI模式，为你提供更智能的解答。</li>
+                    <ul class="list-disc pl-5 mt-2 space-y-1">
+                        <li>你可以直接提问，我将使用内置知识库回答。</li>
+                        <li>如果你输入 <strong>通义千问API密钥</strong>，我将切换到更强大的AI模式，为你提供更智能的解答。</li>
                     </ul>
                     请问有什么可以帮助你的吗？
                 </div>
