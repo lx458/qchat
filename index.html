@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -158,6 +157,8 @@ pip install deepquantum[dev]</pre>
         mermaid.initialize({startOnLoad: true});
         // 初始化事件监听器
         initEventListeners();
+        // 首次加载时，渲染默认显示的Tab中的Mermaid图
+        renderMermaidInTab('intro');
     });
 
     // 初始化能量收敛曲线图
@@ -215,7 +216,7 @@ pip install deepquantum[dev]</pre>
         });
     }
 
-    // Tab切换功能
+    // Tab切换功能 (已修复)
     function showTab(tabId) {
         document.querySelectorAll('.tab-content').forEach(tab => {
             tab.style.display = 'none';
@@ -226,6 +227,28 @@ pip install deepquantum[dev]</pre>
         } else {
             targetTab.style.display = 'block';
         }
+
+        // 关键修复：当Tab显示后，渲染其中的Mermaid图表
+        renderMermaidInTab(tabId);
+    }
+
+    // 辅助函数：渲染指定Tab内的所有Mermaid图表
+    function renderMermaidInTab(tabId) {
+        const targetTab = document.getElementById(tabId);
+        if (!targetTab) return;
+
+        const mermaidElements = targetTab.querySelectorAll('.mermaid');
+        mermaidElements.forEach(el => {
+            // 确保Mermaid库已加载
+            if (typeof mermaid !== 'undefined' && mermaid.render) {
+                // 使用 mermaid.render API 手动渲染
+                // el.textContent 包含了图表的代码
+                // 回调函数接收生成的SVG代码
+                mermaid.render(`mermaid-${Date.now()}`, el.textContent, (svgCode) => {
+                    el.innerHTML = svgCode;
+                });
+            }
+        });
     }
 
     // 问答知识库
@@ -278,5 +301,3 @@ pip install deepquantum[dev]</pre>
 </script>
 </body>
 </html>
-```
-
